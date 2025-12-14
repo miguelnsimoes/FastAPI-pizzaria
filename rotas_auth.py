@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from models import Usuario
+from dependencies import pegar_sessao
 
 rota_auth = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -11,3 +13,19 @@ async def autenticar():
         "mensagem": "voce acessou a rota padrao de autenticacao",
         "autenticado": False
     }
+
+@rota_auth.post("/criar_conta")
+async def criar_conta(email: str, senha: str, nome:str, session = Depends(pegar_sessao)): #variavel session vem da dependencies.py
+    usuario = session.query(Usuario).filter(Usuario.email==email).first()
+    if usuario:
+        #ja existe um usuario com esse email
+        return{
+            "mensagem": "ja existe um usuario com esse"
+        }
+    else:
+        novo_usuario = Usuario(nome, email, senha, True)
+        session.add(novo_usuario)
+        session.commit()
+        return{
+            "mensagem": "usuario cadastrado com sucesso"
+        }
