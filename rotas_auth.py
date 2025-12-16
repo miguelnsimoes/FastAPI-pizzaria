@@ -9,14 +9,14 @@ from datetime import datetime, timedelta, timezone
 
 rota_auth = APIRouter(prefix="/auth", tags=["auth"])
 
-def criar_token(id_usuario):
-    data_expiracao = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+def criar_token(id_usuario, duracao_token=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)):
+    data_expiracao = datetime.now(timezone.utc) + duracao_token
     dic_info = {
         "sub": id_usuario, #sub é o identificador para o dono do token
-        "expiration": data_expiracao
+        "exp": data_expiracao
     }
     jwt_codificado = jwt.encode(dic_info, SECRET_KEY, ALGORITHM)
-    return jwt
+    return jwt_codificado
 
 def autenticar_usuario(email, senha, session):
     usuario = session.query(Usuario).filter(Usuario.email == email).first()
@@ -57,7 +57,9 @@ async def login(login_schema: LoginSchema,  session: Session = Depends(pegar_ses
         raise HTTPException(status_code=400, detail="usuario nao encontrado ou credenciais invalidas")
     else:
         access_token = criar_token(usuario.id)
+        refresh_token = criar_token(usuario.id, duracao_token=timedelta(days=7))
         return {
             "acess_token": access_token,
+            "refresh_token": refresh_token,
             "token_type": "Bearer"
         }
