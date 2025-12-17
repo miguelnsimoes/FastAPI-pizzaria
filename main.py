@@ -13,7 +13,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 app = FastAPI()
 
 bcrypt_contex = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_schema = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_schema = OAuth2PasswordBearer(tokenUrl="auth/login-form")
 
 from rotas_auth import rota_auth
 from rotas_pedidos import rota_pedido
