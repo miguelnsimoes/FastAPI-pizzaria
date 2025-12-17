@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from models import Usuario
-from dependencies import pegar_sessao
+from dependencies import pegar_sessao, verificar_token
 from main import bcrypt_contex, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY
 from schemas import UsuarioSchema, LoginSchema
 from sqlalchemy.orm import Session
@@ -18,9 +18,6 @@ def criar_token(id_usuario, duracao_token=timedelta(minutes=ACCESS_TOKEN_EXPIRE_
     jwt_codificado = jwt.encode(dic_info, SECRET_KEY, ALGORITHM)
     return jwt_codificado
 
-def verificar_token(token, session: Session = Depends(pegar_sessao)):
-    usuario = session.query(Usuario).filter(Usuario.id==1).first
-    return usuario
 
 def autenticar_usuario(email, senha, session):
     usuario = session.query(Usuario).filter(Usuario.email == email).first()
@@ -69,7 +66,7 @@ async def login(login_schema: LoginSchema,  session: Session = Depends(pegar_ses
         }
     
 @rota_auth.get("/refresh")
-async def usar_refresh_token(token):
+async def usar_refresh_token(usuario: Usuario = Depends(verificar_token)):
     usuario = verificar_token(token)
     access_token = criar_token(usuario.id)
     return {
