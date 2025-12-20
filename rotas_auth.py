@@ -61,7 +61,7 @@ async def login(login_schema: LoginSchema,  session: Session = Depends(pegar_ses
         access_token = criar_token(usuario.id)
         refresh_token = criar_token(usuario.id, duracao_token=timedelta(days=7))
         return {
-            "acess_token": access_token,
+            "access_token": access_token,
             "refresh_token": refresh_token,
             "token_type": "Bearer"
         }
@@ -75,7 +75,7 @@ async def login_form(dados_formulario: OAuth2PasswordRequestForm = Depends(),  s
         access_token = criar_token(usuario.id)
         refresh_token = criar_token(usuario.id, duracao_token=timedelta(days=7))
         return {
-            "acess_token": access_token,
+            "access_token": access_token,
             "token_type": "Bearer"
         }
 
@@ -84,6 +84,6 @@ async def login_form(dados_formulario: OAuth2PasswordRequestForm = Depends(),  s
 async def usar_refresh_token(usuario: Usuario = Depends(verificar_token)):
     access_token = criar_token(usuario.id)
     return {
-    "acess_token": access_token,
+    "access_token": access_token,
     "token_type": "Bearer"
 }
