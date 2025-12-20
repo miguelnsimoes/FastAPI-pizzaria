@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional #declada um parametro opcional
+from typing import Optional, List #declada um parametro opcional
 
 class UsuarioSchema(BaseModel):
     nome: str
@@ -34,3 +34,12 @@ class ItemPedidoSchema(BaseModel):
 
         class Config:
              from_attributes = True
+
+class ResponsePedidoSchema(BaseModel):
+    id: int
+    status: str
+    preco: float
+    itens: List[ItemPedidoSchema]
+
+    class Config:
+            from_attributes = True
